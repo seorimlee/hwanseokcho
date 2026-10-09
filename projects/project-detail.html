@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Editorial Direction — Hwanseok Cho</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; }
+    body { font-family: Arial, Helvetica, sans-serif; color: #000; background: #fff; }
+    a { color: inherit; text-decoration: none; }
+    .page { height: 100dvh; padding: 16px; display: flex; flex-direction: column; gap: 32px; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex: 0 0 auto; font-size: 16px; line-height: 1.2; }
+    .header a:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .header .project-name { text-align: right; }
+    .content { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 16px; flex: 1; min-height: 0; }
+    .information { min-width: 0; overflow-y: auto; scrollbar-width: none; padding-right: 20px; }
+    .information::-webkit-scrollbar { display: none; }
+    .description { font-family: 'EB Garamond', Georgia, serif; font-size: clamp(22px, 2.1vw, 32px); line-height: 1.05; letter-spacing: -.015em; max-width: 680px; margin: 0 0 32px; }
+    .meta { font-size: 12px; line-height: 1.5; }
+    .meta p { margin: 0 0 4px; }
+    .gallery { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+    .gallery::-webkit-scrollbar { display: none; }
+    .gallery figure { margin: 0 0 16px; }
+    .gallery img { display: block; width: 100%; height: auto; object-fit: cover; }
+    .gallery figcaption { margin-top: 6px; font-size: 11px; color: #666; }
+    .placeholder { width: 100%; aspect-ratio: 4 / 3; display: grid; place-items: center; background: #ececec; color: #888; font-size: 12px; }
+    .placeholder.tall { aspect-ratio: 3 / 4; background: #d9d9d9; }
+    .placeholder.wide { aspect-ratio: 16 / 9; background: #e5e5e5; }
+    @media (max-width: 700px) {
+      .page { height: auto; min-height: 100dvh; gap: 32px; }
+      .header { font-size: 14px; }
+      .content { display: flex; flex-direction: column; gap: 32px; min-height: auto; }
+      .information { overflow: visible; padding-right: 0; }
+      .description { font-size: 26px; }
+      .gallery { overflow: visible; }
+      .gallery figure { margin-bottom: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="header">
+      <a href="../index.html" aria-label="Back to portfolio">← Back</a>
+      <span class="project-name">Editorial Direction →</span>
+    </header>
+    <div class="content">
+      <section class="information" aria-label="Project information">
+        <p class="description">An exploration of contemporary visual culture through art direction, image-making, and editorial storytelling. The project brings together typography, photography, and visual experimentation to create a distinctive narrative across different formats.</p>
+        <div class="meta">
+          <p>Project — Editorial Direction</p>
+          <p>Year — 2026</p>
+          <p>Role — Art Direction, Design</p>
+          <p>Location — Paris, France</p>
+        </div>
+      </section>
+      <section class="gallery" aria-label="Project images">
+        <!-- Replace each placeholder with: <img src="../images/editorial-01.jpg" alt="Project image 01"> -->
+        <figure><div class="placeholder">IMAGE 01</div></figure>
+        <figure><div class="placeholder tall">IMAGE 02</div></figure>
+        <figure><div class="placeholder wide">IMAGE 03</div></figure>
+        <figure><div class="placeholder">IMAGE 04</div></figure>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
