@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+    <title>Orbit — Portfolio</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --fg: #fff
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html {isolation: isolate;}
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #171717;
+            font-family: Arial, Helvetica, sans-serif
+        }
+
+        body {
+            touch-action: none
+        }
+
+        .portrait {
+            position: fixed;
+            inset: 0;
+            /*background-image: linear-gradient(90deg, rgb(#fff), .08)), url('portrait.jpg');*/
+            background-color: #fff;
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(20%);
+            transform: scale(1.025)
+        }
+
+        .portrait.fallback {
+            /*background-image: linear-gradient(130deg, #bdb6b0, #68686d 45%, #262527)*/
+            background-color: #fff;
+
+        }
+
+        .shade {
+            position: fixed;
+            inset: 0;
+            /*background: linear-gradient(0deg, rgba(0, 0, 0, .42), transparent 27%, transparent 75%, rgba(0, 0, 0, .22));*/
+            background-color: #fff;
+            pointer-events: none
+        }
+
+        .brand {
+            font-family: "EB Garamond", serif;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 100;
+            font-weight: 400;
+            letter-spacing: -.01em;
+            white-space: normal;
+            line-height: 1;
+            pointer-events: none;
+
+            color: #ffff00;
+            mix-blend-mode: difference;
+        }
+
+        .brand .name {
+            font-size: 48px;
+        }
+
+        .brand .description {
+            font-size: 28px;
+        }
+
+        .hint {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            z-index: 5;
+            font-family: "EB Garamond", serif;
+            color: #000;
+        }
+
+        .language-switch {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: "EB Garamond", serif;
+            font-size: 16px;
+            color: #000;
+        }
+
+        .lang-btn {
+            border: 0;
+            background: none;
+            padding: 0;
+            font: inherit;
+            color: #000;
+            opacity: 0.4;
+            cursor: pointer;
+        }
+
+        .lang-btn.active {
+            opacity: 1;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .lang-btn:hover {
+            opacity: 1;
+        }
+
+        .count {
+            position: fixed;
+            right: 32px;
+            bottom: 26px;
+            font-size: 11px;
+            z-index: 5
+        }
+
+        .scene {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            perspective: 1050px;
+            perspective-origin: 50% 50%;
+            overflow: hidden;
+        }
+
+        .orbit {
+            position: absolute;
+            inset: 0;
+            transform-style: preserve-3d;
+            pointer-events: none
+        }
+
+        .project {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: clamp(76px, 9vw, 132px);
+            margin-left: calc(clamp(76px, 9vw, 132px)/-2);
+            margin-top: -70px;
+            transform-style: preserve-3d;
+            pointer-events: auto;
+            text-decoration: none;
+            color: #000;
+            will-change: transform, opacity;
+            outline-offset: 5px
+        }
+
+        .thumb {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1.08;
+            object-fit: cover;
+            background: #333;
+        }
+
+        .project:hover .thumb,
+        .project:focus-visible .thumb {
+            box-shadow: 0 12px 48px #0003;
+            filter: saturate(1.35)
+        }
+
+        .label {
+            display: block;
+            margin-top: 4px;
+            text-align: center;
+            font-size: 8px;
+            font-weight: 500;
+            letter-spacing: .035em;
+        }
+
+        .project:hover .label {
+            text-decoration: underline
+        }
+
+        .center-note {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            letter-spacing: .25em;
+            opacity: .2;
+            pointer-events: none
+        }
+
+        @media(max-width:700px) {
+            .brand {
+                left: 18px;
+                top: 20px
+            }
+
+            .hint {
+                left: 16px;
+                bottom: 16px
+            }
+
+            .count {
+                right: 18px;
+                bottom: 20px
+            }
+
+            .project {
+                width: 78px;
+                margin-left: -39px;
+                margin-top: -48px
+            }
+
+            .label {
+                font-size: 8px;
+                margin-top: 6px
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="portrait" id="portrait"></div>
+    <div class="shade"></div>
+    <div class="brand">
+        <span class="name">Hwanseok Cho</span>
+        <br>
+        <span class="description" id="description">
+            Based in Paris, working as a fashion designer and art director. My practice spans fashion, visual identity, and creative direction, exploring the relationship between design, culture, and contemporary aesthetics. I work across a range of disciplines, developing concepts and visual narratives through a multidisciplinary approach.
+        </span>
+    </div>
+    <div class="scene" id="scene">
+        <div class="orbit" id="orbit"></div>
+    </div>
+    <div class="hint" id="swipeHint">SWIPE LEFT / RIGHT TO EXPLORE</div>
+    <div class="count" id="count"></div>
+    <div class="language-switch">
+        <button type="button" class="lang-btn active" data-lang="en">EN</button>
+        <span>/</span>
+        <button type="button" class="lang-btn" data-lang="fr">FR</button>
+    </div>
+    <script>
+        /* 프로젝트 이미지와 링크를 여기에서 수정하세요. 이미지 경로는 images/01.jpg 형식입니다. */
+        const projects = [{
+                title: 'Editorial Direction',
+                image: 'https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/637732873_17935181784186895_7689148818989443782_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=108&ig_cache_key=Mzg0MDAzMjUwNzM1MDQxNzQ3NA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=10kSXKiN7nAQ7kNvwEvaXVg&_nc_oc=AdqTLD0bf6MS_uMEv-8BEk6KvKOMKBu6hH-oTQ3lC-Ntqoe5Vce-E3HvHHWDsC2vIjg&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=aBExYl-Q74k75VJunGaDXw&_nc_ss=7b2a8&oh=00_AQMskicU14gPJ3iiXL2oWRgxUCMCQlWDuahTDEl8oxzO-A&oe=6ACE7FA6',
+                url: 'projects/editorial.html'
+            },
+            {
+                title: 'Visual Identity',
+                image: 'https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/683657598_17944781394186895_4297796690049979382_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=101&ig_cache_key=Mzg4ODEwMDYwMzA5NjYyOTYwMQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=JrXqODSFnhcQ7kNvwEBaHYG&_nc_oc=AdoFuLoUT-U__ht7S_h8BilzCifhl3AGKiUHwiSLHz5xTdBxNmLpEG-ijaiovMtRha4&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=aBExYl-Q74k75VJunGaDXw&_nc_ss=7b2a8&oh=00_AQMDTJ9GZBaNuHZaNcKu_mkhWLmcAYxc9bU-IWeKXLnnaw&oe=6ACE904C',
+                url: 'projects/identity.html'
+            },
+            {
+                title: 'Digital Experience',
+                image: 'https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/793347770_17964313224186895_7762783366184518195_n.jpg?stp=dst-jpegr_e35_tt6&_nc_cat=111&ig_cache_key=Mzk3ODgyMDI3MDgwOTUyNzE4Mg%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQueHBpZHMuMjYyNi5oZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=n8zzTeNkREIQ7kNvwFUzy3T&_nc_oc=AdovabFlp0bnUK3kUnor2sejoqxXpC9JvKzhCqEbT9k_faB5O_bow73n03FU3m5TznU&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=aBExYl-Q74k75VJunGaDXw&_nc_ss=7b2a8&oh=00_AQPevwO_z8TdDuzlaZUm1cIlA_IuMKYjS_eJ0AnOyQmWCg&oe=6ACE8E8C',
+                url: 'projects/digital.html'
+            },
+            {
+                title: 'Art Direction',
+                image: 'https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/780423306_17962788699186895_5705550933735805530_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=109&ig_cache_key=Mzk3MTU4NTMwODM2NDU5MzQwOA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuNzM2LnNkci5yZWd1bGFyX3Bob3RvLkMzIn0%3D&_nc_ohc=iJfQ9MKrNogQ7kNvwHgriyY&_nc_oc=AdqvtakDgwJPv_-Gt0qSLVu2juE3KZKPCU7fpmsgP5i-D3HROdfXeMidtybgFdjM6YE&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=aBExYl-Q74k75VJunGaDXw&_nc_ss=7b2a8&oh=00_AQMqvcCjrZEwkaQAxuadDlZKi8KS3WX60T6v9CuUL0A8Fg&oe=6ACE9277',
+                url: 'projects/art.html'
+            },
+            {
+                title: 'Campaign 2026',
+                image: 'https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/783556065_17962788606186895_2620527747645448489_n.jpg?stp=dst-jpegr_e35_tt6&_nc_cat=100&ig_cache_key=Mzk3MTU4NTI2MTEwMzE5ODM5Mw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMzA3Mi5oZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=xDCF0FsX730Q7kNvwHJRzX0&_nc_oc=AdqG0IE6qQJhK8u7wE6Q4eSp2q6XuAPwVRQ0x-81sdlvirG0dm4LySgxkhzCPYueWkU&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=aBExYl-Q74k75VJunGaDXw&_nc_ss=7b2a8&oh=00_AQNRZRtBTT8b8qxSMrB3HT01lsGWWfsrzfMeBbpsBWTfcA&oe=6ACE8DD5',
+                url: 'projects/campaign.html'
+            },
+            {
+                title: 'Archive Series',
+                image: 'https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/756045866_17957855967186895_2710023207905680062_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=103&ig_cache_key=Mzk0OTE1MjUxMDQyNTAyOTA2Ng%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTIwNi5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=fHlhJ4Bc780Q7kNvwEBcSKf&_nc_oc=AdrUwPvSWq-Qx32-0852PzwMnHsaAQ5nr4VKzwNZTGtaFvU3v-N1yQgUlm41vIz6hL8&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=aBExYl-Q74k75VJunGaDXw&_nc_ss=7b2a8&oh=00_AQOUZ0uWEI2MKLQCw5rY-xf-0kvKyz8spXsDmpuilUrV9g&oe=6ACE7DCC',
+                url: 'projects/archive.html'
+            },
+            {
+                title: 'Typography',
+                image: 'https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/782413427_17962788624186895_3544165725867002387_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=108&ig_cache_key=Mzk3MTU4NTI5MTY3OTQ1NjQ0NQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTIwNi5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=0GVVSRDPw8IQ7kNvwGBveWq&_nc_oc=AdpSRaUj_tQtS6ptVrgjvZ2HlaW_hgLLfxiHjNJZAA98DkSR400di7vY_Ez_3i-gxS4&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=aBExYl-Q74k75VJunGaDXw&_nc_ss=7b2a8&oh=00_AQNToMnS2MkxXs5fz6wF9_14h27PNDwrGeXuSgdWx2f8qg&oe=6ACE820A',
+                url: 'projects/type.html'
+            },
+            {
+                title: 'Moving Images',
+                image: 'https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/702836592_17947729158186895_8294914910004594670_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=109&ig_cache_key=MzkwMTUxOTE1NTc2NTc4OTUxOQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMjQ4MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=eWeMIlOoBq4Q7kNvwEXcLBI&_nc_oc=Adotv9etc5f9KjccS0AcUA45cLUaGrofSTkCadq59bhqDbozl2UtDkr1sXRxV70xWeI&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=aBExYl-Q74k75VJunGaDXw&_nc_ss=7b2a8&oh=00_AQM1_4QAB3PDxojk-xAFB3bpKKZghspXFSQ0NvFDZ17VAA&oe=6ACE8E7C',
+                url: 'projects/motion.html'
+            },
+            {
+                title: 'Fashion Story',
+                image: 'https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/761355716_17958875598186895_8734784614852550063_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=107&ig_cache_key=Mzk1Mzk2MzY5NTQ4NTg1MzIwMA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQueHBpZHMuMTIwNi5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=YL38L9CKzdEQ7kNvwFsRXAm&_nc_oc=AdrwMjOGT1F42Ajq6YCcsD_9vwPpuW-YfWCOLHMlvT0PJW3zfJb6GS_BHIiwkI7VTUM&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=aBExYl-Q74k75VJunGaDXw&_nc_ss=7b2a8&oh=00_AQPX6_EdxhurMI1zRlMUHr4w7iBavaQ1COjiwdGXNJ8Vxw&oe=6ACE7137',
+                url: 'projects/fashion.html'
+            },
+            {
+                title: 'Objects & Forms',
+                image: 'https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/755870433_17957855940186895_1187030868090604280_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=104&ig_cache_key=Mzk0OTE1MjUwODQzNjgxOTIzOA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuNjI0LnNkci5yZWd1bGFyX3Bob3RvLkMzIn0%3D&_nc_ohc=msCl6mZHGZgQ7kNvwHDHM5p&_nc_oc=AdpcZd_s7DMAtQARO-f59CxRqdn_2q_U4JzMIlheWlN-bT717JzpBrzwmNmK8b00xtI&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=aBExYl-Q74k75VJunGaDXw&_nc_ss=7b2a8&oh=00_AQMlYe-d0ZtS0-mqgvmMZ0h3oWOoiZhnLFR4p0UndLj78w&oe=6ACEA1C0',
+                url: 'projects/objects.html'
+            },
+            {
+                title: 'Brand System',
+                image: 'https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/518127382_17909598822186895_382458999647739576_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=105&ig_cache_key=MzY3NTAzMDc0OTU1MjE0NDk3MQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTIwNi5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=NvWhmMuRsswQ7kNvwFEErXh&_nc_oc=AdpWjewvkUfgAw2jnnimgxaY4gabAkRia_xy2d0AoY21yOtHX0c5k4IuC1D2WTta6nw&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=aBExYl-Q74k75VJunGaDXw&_nc_ss=7b2a8&oh=00_AQO8DuLIjvf1IVL_SMSZ8VDP-6q7oR7jtcDxsZVPFMBn0w&oe=6ACE8979',
+                url: 'projects/brand.html'
+            },
+            {
+                title: 'Selected Posters',
+                image: 'file:///private/var/folders/xm/1qpgv2m160q3f1r8rqk9frq80000gn/T/TemporaryItems/NSIRD_screencaptureui_5Byukp/스크린샷%202026-10-09%20오후%207.13.47.png',
+                url: 'projects/posters.html'
+            },
+            {
+                title: 'Photography',
+                image: 'https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/629501923_17933075703186895_8333558386659429197_n.jpg?stp=dst-jpg_e35_p1080x1080_tt6&_nc_cat=100&ig_cache_key=MzgyNzMwMDA3NTI5OTg3ODkyOA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IlNUT1JZLnhwaWRzLjEyMDYuc2RyLnJlZ3VsYXJfcGhvdG8uQzMifQ%3D%3D&_nc_ohc=JijqR-2_I-cQ7kNvwHIFlh3&_nc_oc=AdonCXvwoxqt_ySekNZxJQlP7c8yxm9bjS7V3kmlkdGC4vXY_bI204PBYqFnGbj_SRE&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=ntm9mzC8RqPrzLgz59wfGQ&_nc_ss=7b6a8&oh=00_AQOlB3ktmaNUBw1r7Z2R9Bski3zm8DEampTvkYs1vDalvA&oe=6ACE8CBA',
+                url: 'projects/photo.html'
+            },
+            {
+                title: 'Experimental Lab',
+                image: 'https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/724239522_17951418132186895_2074611534039591688_n.jpg?stp=dst-jpg_e35_p1080x1080_tt6&_nc_cat=104&ig_cache_key=MzkxOTMwOTM1NDIyMTM4NTExMQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IlNUT1JZLnhwaWRzLjEyMDYuc2RyLnJlZ3VsYXJfcGhvdG8uQzMifQ%3D%3D&_nc_ohc=5Z5-0yITUiUQ7kNvwEKw8qV&_nc_oc=AdrD1t60LFy7nsvUsVk23J4OMP4i5SH68WlNVBRRcvYCixkHhY79s32vjEBLs6r8atI&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=ntm9mzC8RqPrzLgz59wfGQ&_nc_ss=7b6a8&oh=00_AQPumKJKyr0b-4G_2NeHxq3-gHLRzJ-OOAq5Adn0EozUbw&oe=6ACE7A9C',
+                url: 'projects/lab.html'
+            },
+            {
+                title: 'Website Design',
+                image: 'https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/751563720_17957066127186895_7268841055369810796_n.jpg?stp=dst-jpg_e35_p1080x1080_tt6&_nc_cat=100&ig_cache_key=Mzk0NTM3MDg0NjUzMTk2MzgzMA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IlNUT1JZLnhwaWRzLjEyMDYuc2RyLnJlZ3VsYXJfcGhvdG8uQzMifQ%3D%3D&_nc_ohc=lSGmD41WL0AQ7kNvwFb_EOz&_nc_oc=AdqUK87XBZlwqtuN-j04iytXGMHc5p6mAGSnzG-Y2qLZ2HMfad5ohbWoo3aAyjVXIlg&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=ntm9mzC8RqPrzLgz59wfGQ&_nc_ss=7b6a8&oh=00_AQON_KyQ7RPyJGgsrcg6GcfQx_ej2GGG3qjYqJziMlgY3Q&oe=6ACE8B22',
+                url: 'projects/web.html'
+            },
+            {
+                title: 'Printed Matter',
+                image: 'https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/619325382_17931005736186895_7480495782411157245_n.jpg?stp=dst-jpg_e35_p1080x1080_tt6&_nc_cat=102&ig_cache_key=MzgxNDE2NjEwODAyMzU0MzMzNQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IlNUT1JZLnhwaWRzLjEyMDYuc2RyLnJlZ3VsYXJfcGhvdG8uQzMifQ%3D%3D&_nc_ohc=_grsTEj-Uh4Q7kNvwG4fI8f&_nc_oc=Adqle-b1FSt6aaqKeg5hu-DXQk_KBvHE5w-XwfWGMF6Ad5_0lCFwze4vG7IsOn5UuXA&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=ntm9mzC8RqPrzLgz59wfGQ&_nc_ss=7b6a8&oh=00_AQMRNARklNoUj0SeuEndM88GIr-t-lrQROE956YS9_eHHw&oe=6ACE7DE8',
+                url: 'projects/print.html'
+            }
+        ];
+        const orbit = document.getElementById('orbit');
+        document.getElementById('count').textContent = `01 — ${String(projects.length).padStart(2,'0')}`;
+        // 실제 사진이 없을 때도 테스트 가능한 임시 SVG 썸네일
+        const palette = ['#c94b59', '#496e91', '#dfb36c', '#405d50', '#c45b3c', '#6860a1', '#a3a4a0', '#9a6682'];
+        const placeholder = (i) => {
+            let c = palette[i % palette.length];
+            let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="300"><rect width="320" height="300" fill="${c}"/><circle cx="${75+i%5*36}" cy="120" r="94" fill="#fff" opacity=".19"/><path d="M-20 270L300 -20M80 320L350 50" stroke="#111" stroke-width="28" opacity=".35"/><text x="22" y="274" fill="white" font-family="Arial" font-weight="bold" font-size="45">${String(i+1).padStart(2,'0')}</text></svg>`;
+            return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
+        };
+        const nodes = projects.map((p, i) => {
+            const a = document.createElement('a');
+            a.className = 'project';
+            a.href = p.url;
+            a.setAttribute('aria-label', p.title);
+            const img = document.createElement('img');
+            img.className = 'thumb';
+            img.src = p.image;
+            img.alt = p.title;
+            img.onerror = () => {
+                img.onerror = null;
+                img.src = placeholder(i)
+            };
+            const span = document.createElement('span');
+            span.className = 'label';
+            span.textContent = p.title;
+            a.append(img, span);
+            orbit.append(a);
+            return a
+        });
+        // Fibonacci sphere: 이미지를 구 표면에 균일하게 분포
+        const points = projects.map((_, i) => {
+            const y = 1 - 2 * (i + .5) / projects.length;
+            const r = Math.sqrt(1 - y * y);
+            const theta = i * Math.PI * (3 - Math.sqrt(5));
+            return {
+                x: Math.cos(theta) * r,
+                y,
+                z: Math.sin(theta) * r
+            }
+        });
+        // 좌우 이동만 허용: 구체는 세로축(Y축)을 중심으로 회전합니다.
+        let currentY = .35,
+            targetY = .35;
+        const scene = document.getElementById('scene');
+        const portrait = document.getElementById('portrait');
+        const bg = new Image();
+        bg.onload = () => portrait.classList.remove('fallback');
+        bg.onerror = () => portrait.classList.add('fallback');
+        bg.src = 'portrait.jpg';
+
+        function size() {
+            return Math.min(innerWidth * .39, innerHeight * .40, 330)
+        }
+
+        function render() {
+            currentY += (targetY - currentY) * .085;
+            const R = size(),
+                cy = Math.cos(currentY),
+                sy = Math.sin(currentY);
+            points.forEach((p, i) => {
+                const x1 = p.x * cy + p.z * sy,
+                    z1 = -p.x * sy + p.z * cy;
+                const depth = 900 / (900 - z1 * R),
+                    x = x1 * R * depth,
+                    y = p.y * R * depth;
+                const scale = (.70 + .50 * (z1 + 1) / 2) * depth,
+                    el = nodes[i];
+                el.style.transform = `translate3d(${x}px,${y}px,0) scale(${scale})`;
+                el.style.opacity = String(.35 + .65 * (z1 + 1) / 2);
+                el.style.zIndex = String(Math.round((z1 + 1) * 1000));
+                el.style.filter = `blur(${Math.max(0,-z1)*.7}px)`;
+            });
+            requestAnimationFrame(render);
+        }
+        render();
+
+        // 트랙패드: 두 손가락 좌우 스크롤만 반영. 세로 스크롤/커서 이동은 회전하지 않습니다.
+        scene.addEventListener('wheel', e => {
+            if (e.ctrlKey) return;
+            if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+            e.preventDefault();
+            const factor = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerWidth : 1;
+            targetY += Math.max(-90, Math.min(90, e.deltaX * factor)) * .008;
+        }, {
+            passive: false
+        });
+
+        // 클릭과 드래그를 구분: 10px 이상 좌우 이동할 때만 회전 시작.
+        let activePointer = null,
+            startX = 0,
+            startY = 0,
+            lastX = 0,
+            dragging = false,
+            suppressClick = false;
+        scene.addEventListener('pointerdown', e => {
+            if (activePointer !== null || (e.pointerType === 'mouse' && e.button !== 0)) return;
+            activePointer = e.pointerId;
+            startX = lastX = e.clientX;
+            startY = e.clientY;
+            dragging = false;
+            suppressClick = false;
+        });
+        scene.addEventListener('pointermove', e => {
+            if (e.pointerId !== activePointer) return;
+            const dxTotal = e.clientX - startX,
+                dyTotal = e.clientY - startY;
+            if (!dragging) {
+                if (Math.abs(dxTotal) < 10 || Math.abs(dxTotal) <= Math.abs(dyTotal)) return;
+                dragging = true;
+                scene.setPointerCapture(e.pointerId);
+                lastX = e.clientX;
+                return;
+            }
+            targetY += (e.clientX - lastX) * .009;
+            lastX = e.clientX;
+        });
+
+        function endSwipe(e) {
+            if (e.pointerId !== activePointer) return;
+            suppressClick = dragging;
+            dragging = false;
+            activePointer = null;
+            if (scene.hasPointerCapture(e.pointerId)) scene.releasePointerCapture(e.pointerId);
+        }
+        scene.addEventListener('pointerup', endSwipe);
+        scene.addEventListener('pointercancel', endSwipe);
+        scene.addEventListener('click', e => {
+            if (suppressClick) {
+                e.preventDefault();
+                e.stopPropagation();
+                suppressClick = false;
+            }
+        }, true);
+
+        // Language translations
+        const translations = {
+            en: {
+                description: "Based in Paris, working as a fashion designer and art director. My practice spans fashion, visual identity, and creative direction, exploring the relationship between design, culture, and contemporary aesthetics. I work across a range of disciplines, developing concepts and visual narratives through a multidisciplinary approach.",
+                hint: "SWIPE LEFT / RIGHT TO EXPLORE"
+            },
+
+            fr: {
+                description: "Basé à Paris, je travaille en tant que designer de mode et directeur artistique. Ma pratique englobe la mode, l'identité visuelle et la direction créative, en explorant les liens entre le design, la culture et l'esthétique contemporaine. J'évolue à travers différentes disciplines, développant des concepts et des récits visuels dans une approche pluridisciplinaire.",
+                hint: "GLISSEZ À GAUCHE / À DROITE POUR EXPLORER"
+            }
+        };
+
+        // Language switching
+        function setLanguage(lang) {
+            const content = translations[lang];
+            if (!content) return;
+
+            document.getElementById('description').textContent = content.description;
+            document.getElementById('swipeHint').textContent = content.hint;
+
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                const isActive = btn.dataset.lang === lang;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-pressed', String(isActive));
+            });
+
+            document.documentElement.lang = lang;
+
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        // Button events
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setLanguage(btn.dataset.lang);
+            });
+        });
+
+        // Restore saved language
+        const savedLanguage = localStorage.getItem('preferredLanguage');
+        setLanguage(translations[savedLanguage] ? savedLanguage : 'en');
+
+    </script>
+</body>
+
+</html>
