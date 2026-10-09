@@ -18,7 +18,10 @@
             box-sizing: border-box
         }
 
-        html {isolation: isolate;}
+        html {
+            isolation: isolate;
+        }
+
         html,
         body {
             margin: 0;
@@ -101,7 +104,6 @@
             gap: 6px;
             font-family: "EB Garamond", serif;
             font-size: 16px;
-            color: #000;
         }
 
         .lang-btn {
@@ -118,6 +120,7 @@
             opacity: 1;
             text-decoration: underline;
             text-underline-offset: 3px;
+            color: #000;
         }
 
         .lang-btn:hover {
@@ -486,17 +489,24 @@
             const content = translations[lang];
             if (!content) return;
 
+            // Description
             document.getElementById('description').textContent = content.description;
-            document.getElementById('swipeHint').textContent = content.hint;
 
+            // Hint (존재할 때만 변경)
+            const swipeHint = document.getElementById('swipeHint');
+            if (swipeHint) {
+                swipeHint.textContent = content.hint;
+            }
+
+            // Active button
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 const isActive = btn.dataset.lang === lang;
+
                 btn.classList.toggle('active', isActive);
                 btn.setAttribute('aria-pressed', String(isActive));
             });
 
             document.documentElement.lang = lang;
-
             localStorage.setItem('preferredLanguage', lang);
         }
 
